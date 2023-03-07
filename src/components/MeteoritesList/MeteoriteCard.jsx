@@ -20,7 +20,7 @@ const MeteoriteCard = ({ meteorite, setSelectedMeteorite }) => {
         {fall} in {year && year.substring(0, 4)}
       </p>
       <p>Class: {recclass}</p>
-      <p>Mass: {mass}g</p>
+      {mass && <p>Mass: {mass}g</p>}
     </li>
   );
 };
