@@ -1,6 +1,6 @@
 import MeteoritesList from "./MeteoritesList";
 
-const SideBox = ({ meteorites, isLoading }) => {
+const SideBox = ({ meteorites, isLoading, setSelectedMeteorite }) => {
 
   return (
     <section className="side-box">
@@ -8,7 +8,7 @@ const SideBox = ({ meteorites, isLoading }) => {
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <MeteoritesList meteorites={meteorites} />
+        <MeteoritesList meteorites={meteorites} setSelectedMeteorite={setSelectedMeteorite} />
       )}
     </section>
   );
