@@ -1,14 +1,10 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useRef, useState } from "react";
-import Map, { Layer, Marker, Source } from "react-map-gl";
+import Map, { Layer, Source } from "react-map-gl";
 import mapboxToken from "../config/mapBoxToken";
 import { fetchMeteoritesForBounds } from "../utils/api";
 import { generateMeteoriteFeatures } from "../utils/generateMeteoriteFeatures";
-import {
-  clusterCountLayer,
-  clusterLayer,
-  unclusteredPointLayer,
-} from "./Layers";
+import { clusterCountLayer, clusterLayer, singlePointLayer } from "../data/layers";
 
 const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
   const [sourceFeatures, setSourceFeatures] = useState();
@@ -49,34 +45,27 @@ const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
   const onMapClick = (event) => {
     const feature = event.features[0];
 
-    console.log(event)
-
     if (!feature) return;
 
-    const clusterId = feature.properties.cluster_id;
-    const point_count = feature.properties.point_count;
-    const mapboxSource = mapRef.current.getSource("meteorite-landings");
+    if (feature.layer.id === "single-point") {
+      const { meteoriteDetails } = feature.properties;
+      console.log(JSON.parse(meteoriteDetails));
+    }
 
-    mapboxSource.getClusterLeaves(
-      clusterId,
-      point_count,
-      0,
-      (err, aFeatures) => {
+    if (feature.layer.id === "clusters") {
+      const clusterId = feature.properties.cluster_id;
+      const mapboxSource = mapRef.current.getSource("meteorite-landings");
+
+      mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
         if (err) return;
-        // TODO: use features to show info in popup.
-        // console.log(aFeatures);
-      }
-    );
 
-    mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
-      if (err) return;
-
-      mapRef.current.easeTo({
-        center: feature.geometry.coordinates,
-        zoom,
-        duration: 500,
+        mapRef.current.easeTo({
+          center: feature.geometry.coordinates,
+          zoom,
+          duration: 500,
+        });
       });
-    });
+    }
   };
 
   return (
@@ -86,15 +75,15 @@ const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
       onMoveEnd={handleOnChange}
       onZoomEnd={handleOnChange}
       mapboxAccessToken={mapboxToken()}
-      interactiveLayerIds={[clusterLayer.id]}
+      interactiveLayerIds={[clusterLayer.id, singlePointLayer.id]}
       onClick={onMapClick}
       initialViewState={{
         longitude: -2.2385166878479463,
         latitude: 53.47258388177494,
-        zoom: 8,
+        zoom: 6,
       }}
       className="map"
-      minZoom={5}
+      minZoom={4}
       mapStyle="mapbox://styles/mapbox/dark-v11"
     >
       {sourceFeatures && (
@@ -108,14 +97,9 @@ const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
         >
           <Layer {...clusterLayer} />
           <Layer {...clusterCountLayer} />
-          <Layer {...unclusteredPointLayer} />
+          <Layer {...singlePointLayer} />
         </Source>
       )}
-      <Marker latitude={53.47258388177494} longitude={-2.2385166878479463}>
-        <div className="northcoders-special_box">
-          <p>Northcoders 🚀</p>
-        </div>
-      </Marker>
     </Map>
   );
 };
