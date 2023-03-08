@@ -14,6 +14,12 @@ body {
   color: white;
 }
 
+main {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
 h1,
 h2 {
   font-size: 1.4rem;
@@ -41,27 +47,6 @@ button {
   background-color: black;
 }
 
-main {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-}
-
-@media only screen and (max-width: 30rem) {
-  .map {
-    width: 100%;
-    height: 55vh;
-  }
-
-  .side-box {
-    width: 100%;
-    height: 45vh;
-  }
-
-  main {
-    flex-direction: column;
-  }
-}
 
 .side-box__info {
   font-size: 0.85rem;
@@ -112,4 +97,25 @@ main {
 .meteorites__button:hover {
   border-bottom: 2px solid white;
   margin-bottom: -2px;
+}
+
+/* ------ Map marker / popup -------- */
+.marker-point {
+  background-color: yellowgreen;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 100px;
+}
+
+/* Mobile screen */
+@media only screen and (max-width: 768px) {
+  main {
+    flex-direction: column;
+  }
+
+  .side-box {
+    width: 100%;
+    height: 30rem;
+  }
 }

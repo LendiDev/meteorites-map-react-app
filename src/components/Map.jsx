@@ -1,22 +1,32 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useRef, useState } from "react";
-import Map, { Layer, Source } from "react-map-gl";
+import Map, { Layer, Source, Marker } from "react-map-gl";
 import mapboxToken from "../config/mapBoxToken";
 import { fetchMeteoritesForBounds } from "../utils/api";
 import { generateMeteoriteFeatures } from "../utils/generateMeteoriteFeatures";
-import { clusterCountLayer, clusterLayer, singlePointLayer } from "../data/layers";
+import {
+  clusterCountLayer,
+  clusterLayer,
+  singlePointLayer,
+} from "../data/layers";
 
-const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
+const MapView = ({
+  setMeteorites,
+  setIsLoading,
+  selectedMeteorite,
+  hoveredMeteorite,
+  setHoveredMeteorite,
+}) => {
   const [sourceFeatures, setSourceFeatures] = useState();
   const mapRef = useRef();
 
   useEffect(() => {
-    if (mapRef.current) {
+    if (mapRef.current && selectedMeteorite) {
       const { reclong, reclat } = selectedMeteorite;
 
       mapRef.current.flyTo({
         center: [+reclong, +reclat],
-        zoom: 12,
+        zoom: 14,
         duration: 1000,
       });
     }
@@ -40,6 +50,10 @@ const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
 
   const handleOnChange = () => {
     fetchMeteoriteLandings();
+  };
+
+  const handleOnChangeStart = () => {
+    setHoveredMeteorite(null);
   };
 
   const onMapClick = (event) => {
@@ -74,6 +88,8 @@ const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
       onLoad={handleOnLoadMap}
       onMoveEnd={handleOnChange}
       onZoomEnd={handleOnChange}
+      onDragStart={handleOnChangeStart}
+      onZoomStart={handleOnChangeStart}
       mapboxAccessToken={mapboxToken()}
       interactiveLayerIds={[clusterLayer.id, singlePointLayer.id]}
       onClick={onMapClick}
@@ -99,6 +115,14 @@ const MapView = ({ setMeteorites, setIsLoading, selectedMeteorite }) => {
           <Layer {...clusterCountLayer} />
           <Layer {...singlePointLayer} />
         </Source>
+      )}
+      {hoveredMeteorite && (
+        <Marker
+          latitude={hoveredMeteorite.reclat}
+          longitude={hoveredMeteorite.reclong}
+        >
+          <div className="marker-point" />
+        </Marker>
       )}
     </Map>
   );

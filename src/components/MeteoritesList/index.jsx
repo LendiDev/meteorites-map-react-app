@@ -1,6 +1,10 @@
 import MeteoriteCard from "./MeteoriteCard";
 
-const MeteoritesList = ({ meteorites, setSelectedMeteorite }) => {
+const MeteoritesList = ({
+  meteorites,
+  setSelectedMeteorite,
+  setHoveredMeteorite,
+}) => {
   if (meteorites.length === 0) {
     return <p>No meteorites on the map</p>;
   }
@@ -12,7 +16,12 @@ const MeteoritesList = ({ meteorites, setSelectedMeteorite }) => {
       </i>
       <ul className="meteorites">
         {meteorites.map((meteorite) => (
-          <MeteoriteCard key={meteorite.id} meteorite={meteorite} setSelectedMeteorite={setSelectedMeteorite} />
+          <MeteoriteCard
+            key={meteorite.id}
+            meteorite={meteorite}
+            setSelectedMeteorite={setSelectedMeteorite}
+            setHoveredMeteorite={setHoveredMeteorite}
+          />
         ))}
       </ul>
     </>
