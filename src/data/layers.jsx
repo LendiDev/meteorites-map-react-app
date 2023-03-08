@@ -31,8 +31,8 @@ export const clusterCountLayer = {
   },
 };
 
-export const unclusteredPointLayer = {
-  id: "unclustered-point",
+export const singlePointLayer = {
+  id: "single-point",
   type: "circle",
   source: "meteorite-landings",
   filter: ["!", ["has", "point_count"]],
