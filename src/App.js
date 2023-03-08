@@ -19,6 +19,7 @@ function App() {
           selectedMeteorite={selectedMeteorite}
           setHoveredMeteorite={setHoveredMeteorite}
           hoveredMeteorite={hoveredMeteorite}
+          setSelectedMeteorite={setSelectedMeteorite}
         />
         <SideBox
           isLoading={isLoading}

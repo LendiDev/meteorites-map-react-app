@@ -1,6 +1,6 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useRef, useState } from "react";
-import Map, { Layer, Source, Marker } from "react-map-gl";
+import Map, { Layer, Source, Marker, Popup } from "react-map-gl";
 import mapboxToken from "../config/mapBoxToken";
 import { fetchMeteoritesForBounds } from "../utils/api";
 import { generateMeteoriteFeatures } from "../utils/generateMeteoriteFeatures";
@@ -14,6 +14,7 @@ const MapView = ({
   setMeteorites,
   setIsLoading,
   selectedMeteorite,
+  setSelectedMeteorite,
   hoveredMeteorite,
   setHoveredMeteorite,
 }) => {
@@ -63,7 +64,7 @@ const MapView = ({
 
     if (feature.layer.id === "single-point") {
       const { meteoriteDetails } = feature.properties;
-      console.log(JSON.parse(meteoriteDetails));
+      setSelectedMeteorite(JSON.parse(meteoriteDetails));
     }
 
     if (feature.layer.id === "clusters") {
@@ -123,6 +124,26 @@ const MapView = ({
         >
           <div className="marker-point" />
         </Marker>
+      )}
+      {selectedMeteorite && (
+        <Popup
+          longitude={selectedMeteorite.reclong}
+          latitude={selectedMeteorite.reclat}
+          anchor="bottom"
+          onClose={() => setSelectedMeteorite(null)}
+          style={{ color: "black" }}
+        >
+          <h2>{selectedMeteorite.name}</h2>
+          <i>
+            (long: {selectedMeteorite.reclat}, lat: {selectedMeteorite.reclong})
+          </i>
+          <p>
+            {selectedMeteorite.fall} in{" "}
+            {selectedMeteorite.year && selectedMeteorite.year.substring(0, 4)}
+          </p>
+          <p>Class: {selectedMeteorite.recclass}</p>
+          {selectedMeteorite.mass && <p>Mass: {selectedMeteorite.mass}g</p>}
+        </Popup>
       )}
     </Map>
   );
